@@ -17,7 +17,7 @@ private:
     int mHeight;
     int mWidth;
     int emptyCells;
-    vector<Tile> simpleTiles;
+    vector<Position> simpleTiles;
 
 public:
     Table() {}

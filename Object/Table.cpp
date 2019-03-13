@@ -50,8 +50,8 @@ void Table::print() {
     }
     cout << endl;
     cout << "Empty cells: " << simpleTiles.size() << " : ";
-    for (Tile t : simpleTiles){
-        cout << t.getPosition().x << "," << t.getPosition().y << " ; ";
+    for (Position p : simpleTiles){
+        cout << p.x << "," << p.y << " ; ";
     }
     cout << endl << endl;
 }
@@ -61,17 +61,21 @@ bool Table::isAvailable(const int i, const int j) {
 }
 
 bool Table::situateTile(Tile *tile, const int id) {
-    for (Position p : tile->getCells()){
-        if (p.x >= mHeight || p.y >= mWidth || !isAvailable(p.x, p.y))
+    for (int i = 0; i < tile->getLength(); ++i){
+        if ((tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i)) >= mHeight ||
+            (tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0)) >= mWidth ||
+             !isAvailable(tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i),
+                          tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0)))
             return false;
     }
     // add setting of tile into cells
-    for (Position p : tile->getCells()){
-        setCell(p.x, p.y, id);
+    for (int i = 0; i < tile->getLength(); ++i){
+        setCell(tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i),
+                tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0), id);
         emptyCells--;
     }
     if (tile->getType() == ObjectType::Simple)
-        simpleTiles.push_back(*tile);
+        simpleTiles.push_back(tile->getPosition());
     return true;
 }
 
