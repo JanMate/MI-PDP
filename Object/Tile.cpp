@@ -4,9 +4,13 @@
 
 #include "Tile.h"
 
-Tile::Tile(int length, Position position, int value) :
-        mLength(length), mInception(position), mValue(value) {}
+Tile::Tile(int length, const int x, const int y, int value) :
+        mLength(length), x(x), y(y), mValue(value) {}
 
-list <Position> Tile::getCells() {
-    return list<Position>();
+int Tile::getX() const {
+    return x;
+}
+
+int Tile::getY() const {
+    return y;
 }

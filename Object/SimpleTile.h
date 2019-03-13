@@ -14,13 +14,11 @@ class SimpleTile: public Tile {
 private:
 
 public:
-    SimpleTile(int length, Position position, int value);
+    SimpleTile(int length, const int x, const int y, int value);
 
     ~SimpleTile() { }
 
     ObjectType getType() override;
-
-    list<Position> getCells() override;
 
     Direction getDirection() override;
 };

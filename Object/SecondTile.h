@@ -14,13 +14,11 @@ class SecondTile: public Tile {
 private:
     Direction mDirection;
 public:
-    SecondTile(int length, Position position, Direction direction, int value);
+    SecondTile(int length, const int x, const int y, Direction direction, int value);
 
     ~SecondTile() { }
 
     ObjectType getType() override;
-
-    list<Position> getCells() override;
 
     Direction getDirection() override;
 };

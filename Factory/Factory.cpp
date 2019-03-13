@@ -8,20 +8,20 @@ Factory::Factory() {
 
 }
 
-FirstTile *Factory::createFirstTile(Position position, Direction direction) {
-    return new FirstTile(mFirstTypeLength, position, direction, mFirstTypeValue);
+FirstTile *Factory::createFirstTile(const int x, const int y, Direction direction) {
+    return new FirstTile(mFirstTypeLength, x, y, direction, mFirstTypeValue);
 }
 
-SecondTile *Factory::createSecondTile(Position position, Direction direction) {
-    return new SecondTile(mSecondTypeLength, position, direction, mSecondTypeValue);
+SecondTile *Factory::createSecondTile(const int x, const int y, Direction direction) {
+    return new SecondTile(mSecondTypeLength, x, y, direction, mSecondTypeValue);
 }
 
-SimpleTile *Factory::createSimpleTile(Position position) {
-    return new SimpleTile(1, position, mSimpleTypeValue);
+SimpleTile *Factory::createSimpleTile(const int x, const int y) {
+    return new SimpleTile(1, x, y, mSimpleTypeValue);
 }
 
-DisabledTile * Factory::createDisabledTile(Position position) {
-    return new DisabledTile(1, position, 0);
+DisabledTile * Factory::createDisabledTile(const int x, const int y) {
+    return new DisabledTile(1, x, y, 0);
 }
 
 Table * Factory::createTable() const {

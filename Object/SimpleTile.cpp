@@ -4,19 +4,13 @@
 
 #include "SimpleTile.h"
 
-SimpleTile::SimpleTile(int length, Position position, int value)
-                : Tile(length, position, value){
+SimpleTile::SimpleTile(int length, const int x, const int y, int value)
+                : Tile(length, x, y, value){
 
 }
 
 ObjectType SimpleTile::getType() {
     return ObjectType::Simple;
-}
-
-list<Position> SimpleTile::getCells() {
-    list<Position> positions = list<Position>();
-    positions.emplace_back(mInception.x, mInception.y);
-    return positions;
 }
 
 Direction SimpleTile::getDirection() {

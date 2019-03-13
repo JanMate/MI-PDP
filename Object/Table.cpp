@@ -62,20 +62,20 @@ bool Table::isAvailable(const int i, const int j) {
 
 bool Table::situateTile(Tile *tile, const int id) {
     for (int i = 0; i < tile->getLength(); ++i){
-        if ((tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i)) >= mHeight ||
-            (tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0)) >= mWidth ||
-             !isAvailable(tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i),
-                          tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0)))
+        if ((tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i)) >= mHeight ||
+            (tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0)) >= mWidth ||
+             !isAvailable(tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i),
+                          tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0)))
             return false;
     }
     // add setting of tile into cells
     for (int i = 0; i < tile->getLength(); ++i){
-        setCell(tile->getPosition().x + (tile->getDirection() == Direction::Horizontal ? 0 : i),
-                tile->getPosition().y + (tile->getDirection() == Direction::Horizontal ? i : 0), id);
+        setCell(tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i),
+                tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0), id);
         emptyCells--;
     }
     if (tile->getType() == ObjectType::Simple)
-        simpleTiles.push_back(tile->getPosition());
+        simpleTiles.emplace_back(tile->getX(), tile->getY());
     return true;
 }
 

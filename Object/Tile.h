@@ -12,26 +12,30 @@
 
 using namespace std;
 
-class Position;
+//class Position;
 
 class Tile {
 protected:
     int mLength;
-    Position mInception;
+//    Position mInception;
+    int x;
+    int y;
     int mValue;
 
 public:
-    Tile(int length, Position position, int value);
+    Tile(int length, const int x, const int y, int value);
 
     virtual ~Tile() = default;
 
-    Position getPosition() { return mInception; };
+//    Position getPosition() { return mInception; };
+
+    int getX() const;
+
+    int getY() const;
 
     int getValue() { return mValue; }
 
     virtual ObjectType getType() { return ObjectType::Empty; }
-
-    virtual list<Position> getCells();
 
     virtual Direction getDirection() { return Direction::Horizontal; };
 

@@ -13,17 +13,11 @@ class DisabledTile: public Tile {
 private:
 
 public:
-    DisabledTile(int length, Position position, int value);
+    DisabledTile(int length, const int x, const int y, int value);
 
     ~DisabledTile() { }
 
-    int printX() { return mInception.x; }
-
-    int printY() { return mInception.y; }
-
     ObjectType getType() override;
-
-    list<Position> getCells() override;
 
     Direction getDirection() override;
 };

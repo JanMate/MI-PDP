@@ -15,7 +15,7 @@ CalculationCoverageAlgorithm::~CalculationCoverageAlgorithm() {
 
 void CalculationCoverageAlgorithm::fillDisabledTiles(const list<DisabledTile *> &disabledTiles) {
     for (DisabledTile* tile : disabledTiles){
-        mTable->setCell(tile->getPosition().x, tile->getPosition().y, ObjectType::Disabled);
+        mTable->setCell(tile->getX(), tile->getY(), ObjectType::Disabled);
     }
 }
 
@@ -33,11 +33,11 @@ void CalculationCoverageAlgorithm::process() {
 
 //    mTable->print();
 
-    iterate(*mTable, mFactory.createFirstTile(Position(i, j), Direction::Horizontal), i, j, 0, id);
-    iterate(*mTable, mFactory.createFirstTile(Position(i, j), Direction::Vertical), i, j, 0, id);
-    iterate(*mTable, mFactory.createSecondTile(Position(i, j), Direction::Horizontal), i, j, 0, id);
-    iterate(*mTable, mFactory.createSecondTile(Position(i, j), Direction::Vertical), i, j, 0, id);
-    iterate(*mTable, mFactory.createSimpleTile(Position(i, j)), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
+    iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
+    iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
+    iterate(*mTable, mFactory.createSimpleTile(i, j), i, j, 0, id);
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
@@ -74,11 +74,11 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
-    iterate(table, mFactory.createFirstTile(Position(i, j), Direction::Horizontal), i, j, tempValue, localId);
-    iterate(table, mFactory.createFirstTile(Position(i, j), Direction::Vertical), i, j, tempValue, localId);
-    iterate(table, mFactory.createSecondTile(Position(i, j), Direction::Horizontal), i, j, tempValue, localId);
-    iterate(table, mFactory.createSecondTile(Position(i, j), Direction::Vertical), i, j, tempValue, localId);
-    iterate(table, mFactory.createSimpleTile(Position(i, j)), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, mFactory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, mFactory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, mFactory.createSimpleTile(i, j), i, j, tempValue, localId);
 }
 
 bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {

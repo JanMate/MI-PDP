@@ -74,7 +74,7 @@ InputLoader::InputLoader(char *fileName, Factory &factory) {
             printFaultAndCloseFile("Bad number of disabled tiles!", file);
             return;
         }
-        disabledTiles.push_back(factory.createDisabledTile(Position(x, y)));
+        disabledTiles.push_back(factory.createDisabledTile(x, y));
     }
 
     file.close();

@@ -4,16 +4,10 @@
 
 #include "DisabledTile.h"
 
-DisabledTile::DisabledTile(int length, Position position, int value) : Tile(length, position, value) {}
+DisabledTile::DisabledTile(int length, const int x, const int y, int value) : Tile(length, x, y, value) {}
 
 ObjectType DisabledTile::getType() {
     return ObjectType::Disabled;
-}
-
-list<Position> DisabledTile::getCells() {
-    list<Position> positions = list<Position>();
-    positions.emplace_back(mInception.x, mInception.y);
-    return positions;
 }
 
 Direction DisabledTile::getDirection() {

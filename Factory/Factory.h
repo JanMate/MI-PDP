@@ -29,13 +29,13 @@ public:
 
     ~Factory();
 
-    FirstTile* createFirstTile(Position position, Direction direction);
+    FirstTile* createFirstTile(const int x, const int y, Direction direction);
 
-    SecondTile* createSecondTile(Position position, Direction direction);
+    SecondTile* createSecondTile(const int x, const int y, Direction direction);
 
-    SimpleTile *createSimpleTile(Position position);
+    SimpleTile *createSimpleTile(const int x, const int y);
 
-    DisabledTile * createDisabledTile(Position position);
+    DisabledTile * createDisabledTile(const int x, const int y);
 
     Table *createTable() const;
 
