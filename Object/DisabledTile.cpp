@@ -4,7 +4,7 @@
 
 #include "DisabledTile.h"
 
-DisabledTile::DisabledTile(int length, Position *position, int value) : Tile(length, position, value) {}
+DisabledTile::DisabledTile(int length, Position position, int value) : Tile(length, position, value) {}
 
 ObjectType DisabledTile::getType() {
     return ObjectType::Disabled;
@@ -12,7 +12,7 @@ ObjectType DisabledTile::getType() {
 
 list<Position> DisabledTile::getCells() {
     list<Position> positions = list<Position>();
-    positions.emplace_back(mInception->x, mInception->y);
+    positions.emplace_back(mInception.x, mInception.y);
     return positions;
 }
 

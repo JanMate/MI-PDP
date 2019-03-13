@@ -4,7 +4,7 @@
 
 #include "SecondTile.h"
 
-SecondTile::SecondTile(int length, Position *position, Direction direction, int value)
+SecondTile::SecondTile(int length, Position position, Direction direction, int value)
                 : Tile (length, position, value), mDirection(direction) { }
 
 ObjectType SecondTile::getType() {
@@ -14,8 +14,8 @@ ObjectType SecondTile::getType() {
 list<Position> SecondTile::getCells() {
     list<Position> positions = list<Position>();
     for (int i = 0; i < mLength; ++i)
-        positions.emplace_back(mInception->x + (mDirection == Direction::Vertical ? i : 0),
-                               mInception->y + (mDirection == Direction::Vertical ? 0 : i));
+        positions.emplace_back(mInception.x + (mDirection == Direction::Vertical ? i : 0),
+                               mInception.y + (mDirection == Direction::Vertical ? 0 : i));
     return positions;
 }
 

@@ -8,7 +8,6 @@
 
 #include <list>
 #include <iostream>
-#include "../Object/Cell.h"
 #include "../Factory/Factory.h"
 #include "../Object/Table.h"
 
@@ -17,23 +16,31 @@ using namespace std;
 class CalculationCoverageAlgorithm {
 private:
     Table*  mTable;
-    int     maxValue = 0;
+    int     bestValue = INT_MIN;
+    Table   bestTable;
     Factory mFactory;
-    Position*** mPositions;
+    int id = 1;
+    bool completelyEnd = false;
 
-    void iterate(Table table, Tile *tile, int i, int j, int tempValue);
+    void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
 
     bool increment(int *i, int *j, int count);
+
+    int eval_poi(int number);
+
+    int round_value();
 public:
-    CalculationCoverageAlgorithm(const Factory &factory);
+    explicit CalculationCoverageAlgorithm(const Factory &factory);
 
     ~CalculationCoverageAlgorithm();
 
     void process();
 
-    int getMaxValue() { return maxValue; }
+    int getBestValue() { return bestValue; }
 
-    void fillDisabledTiles(const list<DisabledTile*> &disabledTiles);
+    Table getBestTable() { return bestTable; }
+
+    void fillDisabledTiles(const list<DisabledTile *> &disabledTiles);
 };
 
 

@@ -4,7 +4,7 @@
 
 #include "SimpleTile.h"
 
-SimpleTile::SimpleTile(int length, Position *position, int value)
+SimpleTile::SimpleTile(int length, Position position, int value)
                 : Tile(length, position, value){
 
 }
@@ -15,7 +15,7 @@ ObjectType SimpleTile::getType() {
 
 list<Position> SimpleTile::getCells() {
     list<Position> positions = list<Position>();
-    positions.emplace_back(mInception->x, mInception->y);
+    positions.emplace_back(mInception.x, mInception.y);
     return positions;
 }
 

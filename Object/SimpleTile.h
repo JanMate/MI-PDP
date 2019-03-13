@@ -14,7 +14,7 @@ class SimpleTile: public Tile {
 private:
 
 public:
-    SimpleTile(int length, Position *position, int value);
+    SimpleTile(int length, Position position, int value);
 
     ~SimpleTile() { }
 

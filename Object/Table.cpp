@@ -4,80 +4,78 @@
 
 #include <iostream>
 #include "Table.h"
-#include "SimpleTile.h"
 
-Table::Table(const int height, const int width, Position ***positions) : mHeight(height), mWidth(width) {
-    Cell **cells = new Cell*[mHeight];
-    for (int i = 0; i < mHeight; ++i){
-        cells[i] = new Cell[mWidth];
-    }
-    mCells = cells;
+Table::Table(const int height, const int width)
+            : mHeight(height), mWidth(width), mCells(static_cast<unsigned long>(height * width)),
+              emptyCells(height * width), simpleTiles() {
     for (int i = 0; i < mHeight; ++i){
         for (int j = 0; j < mWidth; ++j){
-            mCells[i][j].setTile(new Tile(1, positions[i][j], 0));
+            mCells[i * width + j] = 0;
         }
     }
 }
 
-Table::Table(const Table &table): mHeight(table.mHeight), mWidth(table.mWidth) {
-    Cell **cells = new Cell*[mHeight];
-    for (int i = 0; i < mHeight; ++i){
-        cells[i] = new Cell[mWidth];
-    }
-    mCells = cells;
-    for (int i = 0; i < mHeight; ++i){
-        for (int j = 0; j < mWidth; ++j) {
-            mCells[i][j].setTile(table.mCells[i][j].getTile());
-        }
-    }
+Table::Table(const Table &table): mHeight(table.mHeight), mWidth(table.mWidth), mCells(table.mCells),
+                                  emptyCells(table.emptyCells), simpleTiles(table.simpleTiles) {
+
 }
 
 Table::~Table() {
-    if (mCells != nullptr){
-        for (int i = 0; i < mHeight; ++i){
-            for (int j = 0; j < mWidth; ++j) {
-//                if (mCells[i][j].getTile() != nullptr)
-//                    delete mCells[i][j].getTile();
-            }
-        }
 
-        for (int i = 0; i < mHeight; ++i){
-            delete (mCells[i]);
-        }
-        delete (mCells);
-    }
 }
 
-Cell& Table::getCell(const int i, const int j) {
-    return mCells[i][j];
+int & Table::getCell(const int i, const int j) {
+    return mCells[i * mWidth + j];
 }
 
-void Table::setCell(const int i, const int j, Tile *tile) {
-    mCells[i][j].setTile(tile);
+void Table::setCell(const int i, const int j, const int id) {
+    mCells[i * mWidth + j] = id;
 }
 
 void Table::print() {
+    cout << endl;
     for (int i = 0; i < mHeight; ++i){
         for (int j = 0; j < mWidth; ++j){
-            std::cout << mCells[i][j].getType();
+            if (getCell(i, j) < 0 || getCell(i, j) > 9) {
+                cout << " ";
+                if (getCell(i, j) < 0)
+                    cout << " Z";
+                else
+                    cout << getCell(i, j);
+            } else {
+                cout << "  " << getCell(i, j);
+            }
         }
-        std::cout << std::endl;
+        cout << endl;
     }
+    cout << endl;
+    cout << "Empty cells: " << simpleTiles.size() << " : ";
+    for (Tile t : simpleTiles){
+        cout << t.getPosition().x << "," << t.getPosition().y << " ; ";
+    }
+    cout << endl << endl;
 }
 
 bool Table::isAvailable(const int i, const int j) {
-    return mCells[i][j].getType() == ObjectType::Empty;
+    return mCells[i * mWidth + j] == ObjectType::Empty;
 }
 
-bool Table::situateTile(Tile *tile) {
+bool Table::situateTile(Tile *tile, const int id) {
     for (Position p : tile->getCells()){
         if (p.x >= mHeight || p.y >= mWidth || !isAvailable(p.x, p.y))
             return false;
     }
     // add setting of tile into cells
     for (Position p : tile->getCells()){
-        mCells[p.x][p.y].setTile(tile);
+        setCell(p.x, p.y, id);
+        emptyCells--;
     }
+    if (tile->getType() == ObjectType::Simple)
+        simpleTiles.push_back(*tile);
     return true;
+}
+
+int Table::getCountOfEmptyCells() {
+    return emptyCells;
 }
 

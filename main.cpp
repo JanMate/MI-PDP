@@ -11,23 +11,21 @@ int main(int argc, char *argv[]) {
     }
 
     auto factory = new Factory();
-    auto loader = new InputLoader(argv[1], *factory);
-    if (loader->occuredFail()){
+    auto loader = InputLoader(argv[1], *factory);
+    if (loader.occuredFail()){
         delete factory;
-        delete loader;
         return 1;
     }
 
-    auto algorithm = new CalculationCoverageAlgorithm(*factory);
-    algorithm->fillDisabledTiles(loader->getDisabledTiles());
+    auto algorithm = CalculationCoverageAlgorithm(*factory);
+    algorithm.fillDisabledTiles(loader.getDisabledTiles());
 
-    algorithm->process();
+    algorithm.process();
 
-    cout << algorithm->getMaxValue() << endl;
+    algorithm.getBestTable().print();
+    cout << "Best value: " << algorithm.getBestValue() << endl;
 
     delete factory;
-    delete loader;
-    delete algorithm;
 
     return 0;
 }

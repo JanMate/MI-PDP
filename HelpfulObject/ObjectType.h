@@ -9,9 +9,9 @@
 enum ObjectType: int {
     First = 1,
     Second = 2,
-    Simple = 3,
-    Disabled = 4,
-    Empty = 5
+    Simple = -2,
+    Disabled = -1,
+    Empty = 0
 };
 
 

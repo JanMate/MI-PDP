@@ -4,7 +4,7 @@
 
 #include "Tile.h"
 
-Tile::Tile(int length, Position *position, int value) :
+Tile::Tile(int length, Position position, int value) :
         mLength(length), mInception(position), mValue(value) {}
 
 list <Position> Tile::getCells() {

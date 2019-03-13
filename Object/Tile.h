@@ -17,15 +17,15 @@ class Position;
 class Tile {
 protected:
     int mLength;
-    Position* mInception;
+    Position mInception;
     int mValue;
 
 public:
-    Tile(int length, Position *position, int value);
+    Tile(int length, Position position, int value);
 
     virtual ~Tile() = default;
 
-    Position* getPosition() { return mInception; };
+    Position getPosition() { return mInception; };
 
     int getValue() { return mValue; }
 

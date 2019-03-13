@@ -12,9 +12,9 @@ class FirstTile : public Tile {
 private:
     Direction mDirection;
 public:
-    FirstTile(int length, Position *inception, Direction direction, int value);
+    FirstTile(int length, Position inception, Direction direction, int value);
 
-    ~FirstTile() { }
+    ~FirstTile() override = default;
 
     ObjectType getType() override;
 

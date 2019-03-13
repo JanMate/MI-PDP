@@ -8,24 +8,24 @@ Factory::Factory() {
 
 }
 
-FirstTile *Factory::createFirstTile(Position *position, Direction direction) {
-    return new FirstTile(this->mFirstTypeLength, position, direction, mFirstTypeValue);
+FirstTile *Factory::createFirstTile(Position position, Direction direction) {
+    return new FirstTile(mFirstTypeLength, position, direction, mFirstTypeValue);
 }
 
-SecondTile *Factory::createSecondTile(Position *position, Direction direction) {
-    return new SecondTile(mFirstTypeLength, position, direction, mSecondTypeValue);
+SecondTile *Factory::createSecondTile(Position position, Direction direction) {
+    return new SecondTile(mSecondTypeLength, position, direction, mSecondTypeValue);
 }
 
-SimpleTile *Factory::createSimpleTile(Position *position, Direction direction) {
+SimpleTile *Factory::createSimpleTile(Position position) {
     return new SimpleTile(1, position, mSimpleTypeValue);
 }
 
-DisabledTile *Factory::createDisabledTile(Position *position) {
+DisabledTile * Factory::createDisabledTile(Position position) {
     return new DisabledTile(1, position, 0);
 }
 
-Table * Factory::createTable(Position ***positions) const {
-    return new Table(mHeight, mWidth, positions);
+Table * Factory::createTable() const {
+    return new Table(mHeight, mWidth);
 }
 
 int Factory::getFirstTypeLength() const {
@@ -85,19 +85,13 @@ void Factory::setWidth(int mWidth) {
 }
 
 Factory::~Factory() {
-    for (int i = 0; i < mHeight; i++)
-        delete mPositions[i];
-    delete mPositions;
+
 }
 
-Position ***Factory::createPositions() const {
-    Position*** positions = new Position**[mHeight];
-    for (int i = 0; i < mHeight; i++)
-        positions[i] = new Position*[mWidth];
+int Factory::getDisabledCount() {
+    return disabledCount;
+}
 
-    for (int i = 0; i < mHeight; ++i)
-        for (int j = 0; j < mWidth; ++j)
-            positions[i][j] = new Position(i, j);
-
-    return positions;
+void Factory::setDisabledCount(int count) {
+    disabledCount = count;
 }

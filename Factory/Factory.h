@@ -10,7 +10,6 @@
 #include "../Object/FirstTile.h"
 #include "../Object/SecondTile.h"
 #include "../Object/SimpleTile.h"
-#include "../Object/Cell.h"
 #include "../Object/DisabledTile.h"
 #include "../Object/Table.h"
 
@@ -23,22 +22,22 @@ private:
     int mSimpleTypeValue;
     int mHeight;
     int mWidth;
+    int disabledCount;
 
-    Position*** mPositions;
 public:
     Factory();
 
     ~Factory();
 
-    FirstTile* createFirstTile(Position *position, Direction direction);
+    FirstTile* createFirstTile(Position position, Direction direction);
 
-    SecondTile* createSecondTile(Position *position, Direction direction);
+    SecondTile* createSecondTile(Position position, Direction direction);
 
-    SimpleTile* createSimpleTile(Position *position, Direction direction);
+    SimpleTile *createSimpleTile(Position position);
 
-    DisabledTile* createDisabledTile(Position *position);
+    DisabledTile * createDisabledTile(Position position);
 
-    Table *createTable(Position ***positions) const;
+    Table *createTable() const;
 
     int getFirstTypeLength() const;
 
@@ -68,7 +67,9 @@ public:
 
     void setWidth(int mWidth);
 
-    Position *** createPositions() const;
+    int getDisabledCount();
+
+    void setDisabledCount(int count);
 };
 
 

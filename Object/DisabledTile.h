@@ -13,13 +13,13 @@ class DisabledTile: public Tile {
 private:
 
 public:
-    DisabledTile(int length, Position *position, int value);
+    DisabledTile(int length, Position position, int value);
 
     ~DisabledTile() { }
 
-    int printX() { return mInception->x; }
+    int printX() { return mInception.x; }
 
-    int printY() { return mInception->y; }
+    int printY() { return mInception.y; }
 
     ObjectType getType() override;
 

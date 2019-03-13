@@ -5,8 +5,7 @@
 #include "CalculationCoverageAlgorithm.h"
 
 CalculationCoverageAlgorithm::CalculationCoverageAlgorithm(const Factory &factory)
-                                                :mFactory(factory), mPositions(factory.createPositions()),
-                                                 mTable(factory.createTable(factory.createPositions())) {
+                                                :mFactory(factory), mTable(factory.createTable()), bestTable() {
 
 }
 
@@ -16,7 +15,7 @@ CalculationCoverageAlgorithm::~CalculationCoverageAlgorithm() {
 
 void CalculationCoverageAlgorithm::fillDisabledTiles(const list<DisabledTile *> &disabledTiles) {
     for (DisabledTile* tile : disabledTiles){
-        mTable->setCell(tile->getPosition()->x, tile->getPosition()->y, tile);
+        mTable->setCell(tile->getPosition().x, tile->getPosition().y, ObjectType::Disabled);
     }
 }
 
@@ -32,25 +31,32 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
-    iterate(*mTable, new FirstTile(mFactory.getFirstTypeLength(), mPositions[i][j], Direction::Horizontal,
-                                   mFactory.getFirstTypeValue()), i, j, 0);
-    iterate(*mTable, new FirstTile(mFactory.getFirstTypeLength(), mPositions[i][j], Direction::Vertical,
-                                   mFactory.getFirstTypeValue()), i, j, 0);
-    iterate(*mTable, new SecondTile(mFactory.getSecondTypeLength(), mPositions[i][j], Direction::Horizontal,
-                                    mFactory.getSecondTypeValue()), i, j, 0);
-    iterate(*mTable, new SecondTile(mFactory.getSecondTypeLength(), mPositions[i][j], Direction::Vertical,
-                                    mFactory.getSecondTypeValue()), i, j, 0);
-    iterate(*mTable, new SimpleTile(1, mPositions[i][j], mFactory.getSimpleTypeValue()), i, j, 0);
+//    mTable->print();
+
+    iterate(*mTable, mFactory.createFirstTile(Position(i, j), Direction::Horizontal), i, j, 0, id);
+    iterate(*mTable, mFactory.createFirstTile(Position(i, j), Direction::Vertical), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(Position(i, j), Direction::Horizontal), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(Position(i, j), Direction::Vertical), i, j, 0, id);
+    iterate(*mTable, mFactory.createSimpleTile(Position(i, j)), i, j, 0, id);
 }
 
-void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue) {
+void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
+    if (completelyEnd)
+        return;
+
     bool end;
-    if (table.situateTile(tile)) {
+
+    if (table.situateTile(tile, localId)) {
         tempValue += tile->getValue();
         end = increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
+        localId++;
+        delete tile;
     } else {
+        delete tile;
         return;
     }
+
+//    table.print();
 
     while (!table.isAvailable(i, j) && !end){
         end = increment(&i, &j, 1);
@@ -59,20 +65,20 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         }
     }
     if (end) {
-        if (maxValue < tempValue)
-            maxValue = tempValue;
+        if (bestValue < tempValue) {
+            bestValue = tempValue;
+            bestTable = Table(table);
+            if (round_value() >= bestValue && eval_poi(table.getCountOfEmptyCells()) <= bestValue)
+                completelyEnd = true;
+        }
         return;
     }
 
-    iterate(table, new FirstTile(mFactory.getFirstTypeLength(), mPositions[i][j], Direction::Horizontal,
-                                   mFactory.getFirstTypeValue()), i, j, tempValue);
-    iterate(table, new FirstTile(mFactory.getFirstTypeLength(), mPositions[i][j], Direction::Vertical,
-                                   mFactory.getFirstTypeValue()), i, j, tempValue);
-    iterate(table, new SecondTile(mFactory.getSecondTypeLength(), mPositions[i][j], Direction::Horizontal,
-                                    mFactory.getSecondTypeValue()), i, j, tempValue);
-    iterate(table, new SecondTile(mFactory.getSecondTypeLength(), mPositions[i][j], Direction::Vertical,
-                                    mFactory.getSecondTypeValue()), i, j, tempValue);
-    iterate(table, new SimpleTile(1, mPositions[i][j], mFactory.getSimpleTypeValue()), i, j, tempValue);
+    iterate(table, mFactory.createFirstTile(Position(i, j), Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, mFactory.createFirstTile(Position(i, j), Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(Position(i, j), Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(Position(i, j), Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, mFactory.createSimpleTile(Position(i, j)), i, j, tempValue, localId);
 }
 
 bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {
@@ -83,6 +89,31 @@ bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {
         *j += count;
     }
     return *i >= mFactory.getHeight();
+}
+
+int CalculationCoverageAlgorithm::eval_poi(int number) {
+    // vraci maximalni cenu pro "number" nevyresenych policek
+    // returns the maximal price for the "number" of unsolved squares
+    int i,x;
+    int max=mFactory.getSecondTypeValue()*(number/mFactory.getSecondTypeLength());
+    int zb=number%mFactory.getSecondTypeLength();
+    max+=mFactory.getFirstTypeValue()*(zb/mFactory.getFirstTypeLength());
+    zb=zb%mFactory.getFirstTypeLength();
+    max+=zb*mFactory.getSimpleTypeValue();
+    for(i=0;i<(number/mFactory.getSecondTypeLength());i++)
+    {
+        x=mFactory.getSecondTypeValue()*i;
+        zb=number-i*mFactory.getSecondTypeLength();
+        x+=mFactory.getFirstTypeValue()*(zb/mFactory.getFirstTypeLength());
+        zb=zb%mFactory.getFirstTypeLength();
+        x+=zb*mFactory.getSimpleTypeValue();
+        if (x>max) max=x;
+    }
+    return max;
+}
+
+int CalculationCoverageAlgorithm::round_value() {
+    return mFactory.getSimpleTypeValue() * (mFactory.getHeight() * mFactory.getWidth() - mFactory.getDisabledCount());
 }
 
 

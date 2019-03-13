@@ -13,7 +13,7 @@ using namespace std;
 
 class InputLoader {
 private:
-    list<DisabledTile*> disabledTiles;
+    list<DisabledTile *> disabledTiles;
     bool fail = false;
 
     void printFaultAndCloseFile(string message, ifstream &file);
@@ -22,7 +22,7 @@ public:
 
     ~InputLoader();
 
-    list<DisabledTile*> getDisabledTiles() const;
+    list<DisabledTile *> getDisabledTiles() const;
 
     bool occuredFail();
 };
