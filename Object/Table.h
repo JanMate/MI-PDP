@@ -20,8 +20,6 @@ private:
     vector<Position> simpleTiles;
 
 public:
-    Table() {}
-
     Table(const int height, const int width);
 
     Table(const Table& table);
@@ -39,6 +37,8 @@ public:
     void print();
 
     int getCountOfEmptyCells();
+
+    void decrementFreeCell();
 };
 
 

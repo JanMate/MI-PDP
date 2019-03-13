@@ -83,3 +83,7 @@ int Table::getCountOfEmptyCells() {
     return emptyCells;
 }
 
+void Table::decrementFreeCell() {
+    emptyCells--;
+}
+

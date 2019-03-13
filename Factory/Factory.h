@@ -22,7 +22,7 @@ private:
     int mSimpleTypeValue;
     int mHeight;
     int mWidth;
-    int disabledCount;
+    int disabledCount = 0;
 
 public:
     Factory();

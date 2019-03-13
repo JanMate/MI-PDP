@@ -5,7 +5,8 @@
 #include "CalculationCoverageAlgorithm.h"
 
 CalculationCoverageAlgorithm::CalculationCoverageAlgorithm(const Factory &factory)
-                                                :mFactory(factory), mTable(factory.createTable()), bestTable() {
+                                                :mFactory(factory), mTable(factory.createTable()),
+                                                 bestTable(*(factory.createTable())) {
 
 }
 
@@ -16,7 +17,9 @@ CalculationCoverageAlgorithm::~CalculationCoverageAlgorithm() {
 void CalculationCoverageAlgorithm::fillDisabledTiles(const list<DisabledTile *> &disabledTiles) {
     for (DisabledTile* tile : disabledTiles){
         mTable->setCell(tile->getX(), tile->getY(), ObjectType::Disabled);
+        mTable->decrementFreeCell();
     }
+    upperBound = eval_poi(mTable->getCountOfEmptyCells());
 }
 
 void CalculationCoverageAlgorithm::process() {
@@ -33,24 +36,34 @@ void CalculationCoverageAlgorithm::process() {
 
 //    mTable->print();
 
-    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
-    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
     iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
     iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
+    iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
     iterate(*mTable, mFactory.createSimpleTile(i, j), i, j, 0, id);
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
-    if (completelyEnd)
-        return;
+//    if (completelyEnd)
+//        return;
 
     bool end;
-
     if (table.situateTile(tile, localId)) {
         tempValue += tile->getValue();
         end = increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
         localId++;
         delete tile;
+        if (tempValue + eval_poi(table.getCountOfEmptyCells()) <= bestValue) { // round_value() < tempValue &&
+            return;
+        }
+
+        if (bestValue < tempValue){
+            bestValue = tempValue;
+            bestTable = Table(table);
+        }
+        if (upperBound == tempValue){
+            return;
+        }
     } else {
         delete tile;
         return;
@@ -65,19 +78,13 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         }
     }
     if (end) {
-        if (bestValue < tempValue) {
-            bestValue = tempValue;
-            bestTable = Table(table);
-            if (round_value() >= bestValue && eval_poi(table.getCountOfEmptyCells()) <= bestValue)
-                completelyEnd = true;
-        }
         return;
     }
 
-    iterate(table, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-    iterate(table, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
     iterate(table, mFactory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
     iterate(table, mFactory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, mFactory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
     iterate(table, mFactory.createSimpleTile(i, j), i, j, tempValue, localId);
 }
 
@@ -113,7 +120,7 @@ int CalculationCoverageAlgorithm::eval_poi(int number) {
 }
 
 int CalculationCoverageAlgorithm::round_value() {
-    return mFactory.getSimpleTypeValue() * (mFactory.getHeight() * mFactory.getWidth() - mFactory.getDisabledCount());
+    return mFactory.getSimpleTypeValue() * ((mFactory.getHeight() * mFactory.getWidth()) - mFactory.getDisabledCount());
 }
 
 

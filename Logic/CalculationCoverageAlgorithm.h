@@ -21,6 +21,7 @@ private:
     Factory mFactory;
     int id = 1;
     bool completelyEnd = false;
+    int upperBound = 0;
 
     void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
 
