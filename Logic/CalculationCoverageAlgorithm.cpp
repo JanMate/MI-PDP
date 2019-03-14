@@ -6,9 +6,7 @@
 
 CalculationCoverageAlgorithm::CalculationCoverageAlgorithm(const Factory &factory)
                                                 :mFactory(factory), mTable(factory.createTable()),
-                                                 bestTable(*(factory.createTable())) {
-
-}
+                                                 bestTable(*(factory.createTable())) { }
 
 CalculationCoverageAlgorithm::~CalculationCoverageAlgorithm() {
     delete mTable;
@@ -34,8 +32,6 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
-//    mTable->print();
-
     iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
     iterate(*mTable, mFactory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
     iterate(*mTable, mFactory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
@@ -44,24 +40,20 @@ void CalculationCoverageAlgorithm::process() {
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
-//    if (completelyEnd)
-//        return;
-
     bool end;
     if (table.situateTile(tile, localId)) {
         tempValue += tile->getValue();
         end = increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
+        while (!table.isAvailable(i, j) && !end){
+            end = increment(&i, &j, 1);
+            if (end){
+                break;
+            }
+        }
         localId++;
         delete tile;
-        if (tempValue + eval_poi(table.getCountOfEmptyCells()) <= bestValue) { // round_value() < tempValue &&
-            return;
-        }
 
-        if (bestValue < tempValue){
-            bestValue = tempValue;
-            bestTable = Table(table);
-        }
-        if (upperBound == tempValue){
+        if (tempValue + eval_poi(table.getCountOfEmptyCells()) <= bestValue) {
             return;
         }
     } else {
@@ -69,15 +61,15 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
-//    table.print();
-
-    while (!table.isAvailable(i, j) && !end){
-        end = increment(&i, &j, 1);
-        if (end){
-            break;
-        }
-    }
     if (end) {
+        int currentValue = tempValue + (table.getCountOfEmptyCells() * -2);
+        if (bestValue < currentValue){
+            bestValue = currentValue;
+            bestTable = Table(table);
+        }
+        if (upperBound == bestValue){
+            return;
+        }
         return;
     }
 
@@ -118,9 +110,3 @@ int CalculationCoverageAlgorithm::eval_poi(int number) {
     }
     return max;
 }
-
-int CalculationCoverageAlgorithm::round_value() {
-    return mFactory.getSimpleTypeValue() * ((mFactory.getHeight() * mFactory.getWidth()) - mFactory.getDisabledCount());
-}
-
-

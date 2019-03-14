@@ -20,7 +20,6 @@ private:
     Table   bestTable;
     Factory mFactory;
     int id = 1;
-    bool completelyEnd = false;
     int upperBound = 0;
 
     void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
@@ -28,8 +27,6 @@ private:
     bool increment(int *i, int *j, int count);
 
     int eval_poi(int number);
-
-    int round_value();
 public:
     explicit CalculationCoverageAlgorithm(const Factory &factory);
 

@@ -9,7 +9,7 @@
 enum ObjectType: int {
     First = 1,
     Second = 2,
-    Simple = -2,
+    Simple = -10,
     Disabled = -1,
     Empty = 0
 };

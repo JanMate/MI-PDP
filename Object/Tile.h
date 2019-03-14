@@ -12,12 +12,9 @@
 
 using namespace std;
 
-//class Position;
-
 class Tile {
 protected:
     int mLength;
-//    Position mInception;
     int x;
     int y;
     int mValue;
@@ -26,8 +23,6 @@ public:
     Tile(int length, const int x, const int y, int value);
 
     virtual ~Tile() = default;
-
-//    Position getPosition() { return mInception; };
 
     int getX() const;
 

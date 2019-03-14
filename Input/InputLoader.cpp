@@ -18,9 +18,9 @@ InputLoader::InputLoader(char *fileName, Factory &factory) {
 
     // first line in file
     file >> tmp;
-    factory.setWidth(tmp);
-    file >> tmp;
     factory.setHeight(tmp);
+    file >> tmp;
+    factory.setWidth(tmp);
 
 
     // second line in file
@@ -69,7 +69,7 @@ InputLoader::InputLoader(char *fileName, Factory &factory) {
 
     int x, y;
     for (int i = 0; i < tmp; ++i){
-        file >> x >> y;
+        file >> y >> x;
         if (x < 0 || x >= factory.getHeight() || y < 0 || y >= factory.getWidth()) {
             printFaultAndCloseFile("Bad number of disabled tiles!", file);
             return;

@@ -38,8 +38,10 @@ void Table::print() {
         for (int j = 0; j < mWidth; ++j){
             if (getCell(i, j) < 0 || getCell(i, j) > 9) {
                 cout << " ";
-                if (getCell(i, j) < 0)
+                if (getCell(i, j) == ObjectType::Disabled)
                     cout << " Z";
+                else if (getCell(i, j) == ObjectType::Simple)
+                    cout << " -";
                 else
                     cout << getCell(i, j);
             } else {
@@ -71,7 +73,7 @@ bool Table::situateTile(Tile *tile, const int id) {
     // add setting of tile into cells
     for (int i = 0; i < tile->getLength(); ++i){
         setCell(tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i),
-                tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0), id);
+                tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0), (tile->getType() == ObjectType::Simple ? ObjectType::Simple : id));
         emptyCells--;
     }
     if (tile->getType() == ObjectType::Simple)
