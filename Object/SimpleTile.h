@@ -11,8 +11,6 @@
 #include "Tile.h"
 
 class SimpleTile: public Tile {
-private:
-
 public:
     SimpleTile(int length, const int x, const int y, int value);
 

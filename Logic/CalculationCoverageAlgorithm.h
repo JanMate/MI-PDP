@@ -15,10 +15,10 @@ using namespace std;
 
 class CalculationCoverageAlgorithm {
 private:
-    Table*  mTable;
+    Table*  initTable;
     int     bestValue = INT_MIN;
     Table   bestTable;
-    Factory mFactory;
+    Factory factory;
     int id = 1;
     int upperBound = 0;
 

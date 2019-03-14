@@ -6,36 +6,34 @@
 #include "Table.h"
 
 Table::Table(const int height, const int width)
-            : mHeight(height), mWidth(width), mCells(static_cast<unsigned long>(height * width)),
+            : height(height), width(width), cells(static_cast<unsigned long>(height * width)),
               emptyCells(height * width), simpleTiles() {
-    for (int i = 0; i < mHeight; ++i){
-        for (int j = 0; j < mWidth; ++j){
-            mCells[i * width + j] = 0;
+    for (int i = 0; i < this->height; ++i){
+        for (int j = 0; j < this->width; ++j){
+            cells[i * this->width + j] = 0;
         }
     }
 }
 
-Table::Table(const Table &table): mHeight(table.mHeight), mWidth(table.mWidth), mCells(table.mCells),
-                                  emptyCells(table.emptyCells), simpleTiles(table.simpleTiles) {
-
-}
+Table::Table(const Table &table): height(table.height), width(table.width), cells(table.cells),
+                                  emptyCells(table.emptyCells), simpleTiles(table.simpleTiles) { }
 
 Table::~Table() {
 
 }
 
 int & Table::getCell(const int i, const int j) {
-    return mCells[i * mWidth + j];
+    return cells[i * width + j];
 }
 
 void Table::setCell(const int i, const int j, const int id) {
-    mCells[i * mWidth + j] = id;
+    cells[i * width + j] = id;
 }
 
 void Table::print() {
     cout << endl;
-    for (int i = 0; i < mHeight; ++i){
-        for (int j = 0; j < mWidth; ++j){
+    for (int i = 0; i < height; ++i){
+        for (int j = 0; j < width; ++j){
             if (getCell(i, j) < 0 || getCell(i, j) > 9) {
                 cout << " ";
                 if (getCell(i, j) == ObjectType::Disabled)
@@ -59,13 +57,13 @@ void Table::print() {
 }
 
 bool Table::isAvailable(const int i, const int j) {
-    return mCells[i * mWidth + j] == ObjectType::Empty;
+    return cells[i * width + j] == ObjectType::Empty;
 }
 
 bool Table::situateTile(Tile *tile, const int id) {
     for (int i = 0; i < tile->getLength(); ++i){
-        if ((tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i)) >= mHeight ||
-            (tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0)) >= mWidth ||
+        if ((tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i)) >= height ||
+            (tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0)) >= width ||
              !isAvailable(tile->getX() + (tile->getDirection() == Direction::Horizontal ? 0 : i),
                           tile->getY() + (tile->getDirection() == Direction::Horizontal ? i : 0)))
             return false;

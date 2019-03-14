@@ -15,13 +15,13 @@
 
 class Factory {
 private:
-    int mFirstTypeLength;
-    int mSecondTypeLength;
-    int mFirstTypeValue;
-    int mSecondTypeValue;
-    int mSimpleTypeValue;
-    int mHeight;
-    int mWidth;
+    int firstTypeLength;
+    int secondTypeLength;
+    int firstTypeValue;
+    int secondTypeValue;
+    int simpleTypeValue;
+    int height;
+    int width;
     int disabledCount = 0;
 
 public:
@@ -41,31 +41,31 @@ public:
 
     int getFirstTypeLength() const;
 
-    void setFirstTypeLength(int mFirstTypeLength);
+    void setFirstTypeLength(int firstTypeLength);
 
     int getSecondTypeLength() const;
 
-    void setSecondTypeLength(int mSecondTypeLength);
+    void setSecondTypeLength(int secondTypeLength);
 
     int getFirstTypeValue() const;
 
-    void setFirstTypeValue(int mFirstTypeValue);
+    void setFirstTypeValue(int firstTypeValue);
 
     int getSecondTypeValue() const;
 
-    void setSecondTypeValue(int mSecondTypeValue);
+    void setSecondTypeValue(int secondTypeValue);
 
     int getSimpleTypeValue() const;
 
-    void setSimpleTypeValue(int mSimpleTypeValue);
+    void setSimpleTypeValue(int simpleTypeValue);
 
     int getHeight() const;
 
-    void setHeight(int mHeight);
+    void setHeight(int height);
 
     int getWidth() const;
 
-    void setWidth(int mWidth);
+    void setWidth(int width);
 
     int getDisabledCount();
 

@@ -14,10 +14,10 @@ using namespace std;
 
 class Tile {
 protected:
-    int mLength;
+    int length;
     int x;
     int y;
-    int mValue;
+    int value;
 
 public:
     Tile(int length, const int x, const int y, int value);
@@ -28,13 +28,13 @@ public:
 
     int getY() const;
 
-    int getValue() { return mValue; }
+    int getValue() { return value; }
 
     virtual ObjectType getType() { return ObjectType::Empty; }
 
     virtual Direction getDirection() { return Direction::Horizontal; };
 
-    int getLength() { return mLength; }
+    int getLength() { return length; }
 };
 
 

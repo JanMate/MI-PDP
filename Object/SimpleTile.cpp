@@ -4,10 +4,7 @@
 
 #include "SimpleTile.h"
 
-SimpleTile::SimpleTile(int length, const int x, const int y, int value)
-                : Tile(length, x, y, value){
-
-}
+SimpleTile::SimpleTile(int length, const int x, const int y, int value): Tile(length, x, y, value) { }
 
 ObjectType SimpleTile::getType() {
     return ObjectType::Simple;

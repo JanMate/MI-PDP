@@ -5,12 +5,12 @@
 #include "FirstTile.h"
 
 FirstTile::FirstTile(int length, const int x, const int y, Direction direction, int value):
-                Tile(length, x, y, value), mDirection(direction) { }
+                Tile(length, x, y, value), direction(direction) { }
 
 ObjectType FirstTile::getType() {
     return ObjectType::First;
 }
 
 Direction FirstTile::getDirection() {
-    return mDirection;
+    return direction;
 }

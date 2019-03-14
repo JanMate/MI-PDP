@@ -24,7 +24,7 @@ public:
 
     list<DisabledTile *> getDisabledTiles() const;
 
-    bool occuredFail();
+    bool failOccurred();
 };
 
 

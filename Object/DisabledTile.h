@@ -10,8 +10,6 @@
 #include "Tile.h"
 
 class DisabledTile: public Tile {
-private:
-
 public:
     DisabledTile(int length, const int x, const int y, int value);
 

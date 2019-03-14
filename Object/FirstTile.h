@@ -10,7 +10,8 @@
 
 class FirstTile : public Tile {
 private:
-    Direction mDirection;
+    Direction direction;
+
 public:
     FirstTile(int length, const int x, const int y, Direction direction, int value);
 

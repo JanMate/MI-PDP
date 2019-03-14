@@ -4,7 +4,7 @@
 
 #include "DisabledTile.h"
 
-DisabledTile::DisabledTile(int length, const int x, const int y, int value) : Tile(length, x, y, value) {}
+DisabledTile::DisabledTile(int length, const int x, const int y, int value) : Tile(length, x, y, value) { }
 
 ObjectType DisabledTile::getType() {
     return ObjectType::Disabled;

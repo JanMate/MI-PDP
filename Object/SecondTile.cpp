@@ -5,12 +5,12 @@
 #include "SecondTile.h"
 
 SecondTile::SecondTile(int length, const int x, const int y, Direction direction, int value)
-                : Tile (length, x, y, value), mDirection(direction) { }
+                : Tile (length, x, y, value), direction(direction) { }
 
 ObjectType SecondTile::getType() {
     return ObjectType::Second;
 }
 
 Direction SecondTile::getDirection() {
-    return mDirection;
+    return direction;
 }

@@ -5,7 +5,7 @@
 #include "Tile.h"
 
 Tile::Tile(int length, const int x, const int y, int value) :
-        mLength(length), x(x), y(y), mValue(value) {}
+        length(length), x(x), y(y), value(value) { }
 
 int Tile::getX() const {
     return x;

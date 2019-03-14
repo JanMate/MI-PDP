@@ -96,6 +96,6 @@ void InputLoader::printFaultAndCloseFile(string message, ifstream &file) {
     file.close();
 }
 
-bool InputLoader::occuredFail() {
+bool InputLoader::failOccurred() {
     return fail;
 }

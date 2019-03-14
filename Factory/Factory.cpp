@@ -4,20 +4,18 @@
 
 #include "Factory.h"
 
-Factory::Factory() {
-
-}
+Factory::Factory() { }
 
 FirstTile *Factory::createFirstTile(const int x, const int y, Direction direction) {
-    return new FirstTile(mFirstTypeLength, x, y, direction, mFirstTypeValue);
+    return new FirstTile(firstTypeLength, x, y, direction, firstTypeValue);
 }
 
 SecondTile *Factory::createSecondTile(const int x, const int y, Direction direction) {
-    return new SecondTile(mSecondTypeLength, x, y, direction, mSecondTypeValue);
+    return new SecondTile(secondTypeLength, x, y, direction, secondTypeValue);
 }
 
 SimpleTile *Factory::createSimpleTile(const int x, const int y) {
-    return new SimpleTile(1, x, y, mSimpleTypeValue);
+    return new SimpleTile(1, x, y, simpleTypeValue);
 }
 
 DisabledTile * Factory::createDisabledTile(const int x, const int y) {
@@ -25,63 +23,63 @@ DisabledTile * Factory::createDisabledTile(const int x, const int y) {
 }
 
 Table * Factory::createTable() const {
-    return new Table(mHeight, mWidth);
+    return new Table(height, width);
 }
 
 int Factory::getFirstTypeLength() const {
-    return mFirstTypeLength;
+    return firstTypeLength;
 }
 
-void Factory::setFirstTypeLength(int mFirstTypeLength) {
-    Factory::mFirstTypeLength = mFirstTypeLength;
+void Factory::setFirstTypeLength(int firstTypeLength) {
+    Factory::firstTypeLength = firstTypeLength;
 }
 
 int Factory::getSecondTypeLength() const {
-    return mSecondTypeLength;
+    return secondTypeLength;
 }
 
-void Factory::setSecondTypeLength(int mSecondTypeLength) {
-    Factory::mSecondTypeLength = mSecondTypeLength;
+void Factory::setSecondTypeLength(int secondTypeLength) {
+    Factory::secondTypeLength = secondTypeLength;
 }
 
 int Factory::getFirstTypeValue() const {
-    return mFirstTypeValue;
+    return firstTypeValue;
 }
 
-void Factory::setFirstTypeValue(int mFirstTypeValue) {
-    Factory::mFirstTypeValue = mFirstTypeValue;
+void Factory::setFirstTypeValue(int firstTypeValue) {
+    Factory::firstTypeValue = firstTypeValue;
 }
 
 int Factory::getSecondTypeValue() const {
-    return mSecondTypeValue;
+    return secondTypeValue;
 }
 
-void Factory::setSecondTypeValue(int mSecondTypeValue) {
-    Factory::mSecondTypeValue = mSecondTypeValue;
+void Factory::setSecondTypeValue(int secondTypeValue) {
+    Factory::secondTypeValue = secondTypeValue;
 }
 
 int Factory::getSimpleTypeValue() const {
-    return mSimpleTypeValue;
+    return simpleTypeValue;
 }
 
-void Factory::setSimpleTypeValue(int mSimpleTypeValue) {
-    Factory::mSimpleTypeValue = mSimpleTypeValue;
+void Factory::setSimpleTypeValue(int simpleTypeValue) {
+    Factory::simpleTypeValue = simpleTypeValue;
 }
 
 int Factory::getHeight() const {
-    return mHeight;
+    return height;
 }
 
-void Factory::setHeight(int mHeight) {
-    Factory::mHeight = mHeight;
+void Factory::setHeight(int height) {
+    Factory::height = height;
 }
 
 int Factory::getWidth() const {
-    return mWidth;
+    return width;
 }
 
-void Factory::setWidth(int mWidth) {
-    Factory::mWidth = mWidth;
+void Factory::setWidth(int width) {
+    Factory::width = width;
 }
 
 Factory::~Factory() {

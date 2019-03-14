@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
     auto factory = new Factory();
     auto loader = InputLoader(argv[1], *factory);
-    if (loader.occuredFail()){
+    if (loader.failOccurred()){
         delete factory;
         return 1;
     }

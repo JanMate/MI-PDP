@@ -13,9 +13,9 @@ using namespace std;
 
 class Table {
 private:
-    vector<int> mCells;
-    int mHeight;
-    int mWidth;
+    vector<int> cells;
+    int height;
+    int width;
     int emptyCells;
     vector<Position> simpleTiles;
 
