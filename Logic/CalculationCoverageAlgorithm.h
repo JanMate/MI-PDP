@@ -8,6 +8,8 @@
 
 #include <list>
 #include <iostream>
+#include <climits>
+#include <omp.h>
 #include "../Factory/Factory.h"
 #include "../Object/Table.h"
 

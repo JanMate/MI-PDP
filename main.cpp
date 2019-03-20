@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Logic/CalculationCoverageAlgorithm.h"
 #include "Input/InputLoader.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -20,10 +21,12 @@ int main(int argc, char *argv[]) {
     auto algorithm = CalculationCoverageAlgorithm(*factory);
     algorithm.fillDisabledTiles(loader.getDisabledTiles());
 
-    algorithm.process();
+    # pragma omp parallel
+        # pragma omp single
+            algorithm.process();
 
-    algorithm.getBestTable().print();
-    cout << "Best value: " << algorithm.getBestValue() << endl;
+        algorithm.getBestTable().print();
+        cout << "Best value: " << algorithm.getBestValue() << endl;
 
     delete factory;
 

@@ -32,11 +32,17 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
-    iterate(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
-    iterate(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
-    iterate(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
-    iterate(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
-    iterate(*initTable, factory.createSimpleTile(i, j), i, j, 0, id);
+    #pragma omp task
+        iterate(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
+    #pragma omp task
+        iterate(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
+    #pragma omp task
+        iterate(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
+    #pragma omp task
+        iterate(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
+    #pragma omp task
+        iterate(*initTable, factory.createSimpleTile(i, j), i, j, 0, id);
+
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
@@ -62,10 +68,16 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
     }
 
     if (end) {
-        int currentValue = tempValue + (table.getCountOfEmptyCells() * -2);
+        int currentValue = tempValue + (table.getCountOfEmptyCells() * factory.getSimpleTypeValue());
         if (bestValue < currentValue){
-            bestValue = currentValue;
-            bestTable = Table(table);
+            # pragma omp critical
+            {
+                if (bestValue < currentValue) {
+                    bestValue = currentValue;
+                    bestTable = Table(table);
+
+                }
+            };
         }
         if (upperBound == bestValue){
             return;
@@ -73,11 +85,16 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
-    iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-    iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-    iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-    iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-    iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
+    #pragma omp task if (i < (factory.getHeight() - 1))
+        iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    #pragma omp task if (i < (factory.getHeight() - 1))
+        iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    #pragma omp task if (i < (factory.getHeight() - 1))
+        iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    #pragma omp task if (i < (factory.getHeight() - 1))
+        iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    #pragma omp task if (i < (factory.getHeight() - 1))
+        iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
 }
 
 bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {
