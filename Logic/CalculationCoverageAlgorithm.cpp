@@ -32,17 +32,28 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
-    #pragma omp task
-        iterate(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
-    #pragma omp task
-        iterate(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
-    #pragma omp task
-        iterate(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
-    #pragma omp task
-        iterate(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
-    #pragma omp task
-        iterate(*initTable, factory.createSimpleTile(i, j), i, j, 0, id);
-
+    #pragma omp parallel for schedule(dynamic)
+    for (int k = 0; k < 5; ++k) {
+        switch (k){
+            case 0:
+                iterate(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
+                break;
+            case 1:
+                iterate(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
+                break;
+            case 2:
+                iterate(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
+                break;
+            case 3:
+                iterate(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
+                break;
+            case 4:
+                iterate(*initTable, factory.createSimpleTile(i, j), i, j, 0, id);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
@@ -85,16 +96,28 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
-    #pragma omp task if (i < (factory.getHeight() - 1))
-        iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-    #pragma omp task if (i < (factory.getHeight() - 1))
-        iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-    #pragma omp task if (i < (factory.getHeight() - 1))
-        iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-    #pragma omp task if (i < (factory.getHeight() - 1))
-        iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-    #pragma omp task if (i < (factory.getHeight() - 1))
-        iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
+    #pragma omp parallel for schedule(dynamic)
+    for (int k = 0; k < 5; ++k) {
+        switch (k){
+            case 0:
+                iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+                break;
+            case 1:
+                iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+                break;
+            case 2:
+                iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+                break;
+            case 3:
+                iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+                break;
+            case 4:
+                iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {

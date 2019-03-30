@@ -21,12 +21,10 @@ int main(int argc, char *argv[]) {
     auto algorithm = CalculationCoverageAlgorithm(*factory);
     algorithm.fillDisabledTiles(loader.getDisabledTiles());
 
-    # pragma omp parallel
-        # pragma omp single
-            algorithm.process();
+    algorithm.process();
 
-        algorithm.getBestTable().print();
-        cout << "Best value: " << algorithm.getBestValue() << endl;
+    algorithm.getBestTable().print();
+    cout << "Best value: " << algorithm.getBestValue() << endl;
 
     delete factory;
 
