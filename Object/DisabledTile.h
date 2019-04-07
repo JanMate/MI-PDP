@@ -6,7 +6,7 @@
 #define MI_PDP_DISABLEDTILE_H
 
 
-#include <string>
+//#include <string>
 #include "Tile.h"
 
 class DisabledTile: public Tile {

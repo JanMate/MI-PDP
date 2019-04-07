@@ -20,7 +20,17 @@ public:
 
     State(Table table, int i, int j, int tempValue, int localId);
 
-    ~State();
+    ~State() = default;
+
+    const Table &getTable() const;
+
+    int getI() const;
+
+    int getJ() const;
+
+    int getTempValue() const;
+
+    int getLocalId() const;
 };
 
 

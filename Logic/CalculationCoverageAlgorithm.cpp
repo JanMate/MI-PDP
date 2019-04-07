@@ -32,29 +32,15 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
-    generateStates(0, 0);
+    generateStates(i, j);
 
     #pragma omp parallel for schedule(dynamic)
-    for (int k = 0; k < 5; ++k) {
-        switch (k){
-            case 0:
-                iterate(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id);
-                break;
-            case 1:
-                iterate(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id);
-                break;
-            case 2:
-                iterate(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id);
-                break;
-            case 3:
-                iterate(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id);
-                break;
-            case 4:
-                iterate(*initTable, factory.createSimpleTile(i, j), i, j, 0, id);
-                break;
-            default:
-                break;
-        }
+    for (int k = 0; k < states.size() - 1; ++k) {
+        iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+        iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+        iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+        iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+        iterate(states[k].getTable(), factory.createSimpleTile(states[k].getI(), states[k].getJ()), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
     }
 }
 
@@ -98,73 +84,50 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
-    #pragma omp parallel for schedule(dynamic)
-    for (int k = 0; k < 5; ++k) {
-        switch (k){
-            case 0:
-                iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-                break;
-            case 1:
-                iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-                break;
-            case 2:
-                iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
-                break;
-            case 3:
-                iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
-                break;
-            case 4:
-                iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
-                break;
-            default:
-                break;
-        }
-    }
+    iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
 }
 
 void CalculationCoverageAlgorithm::generateStates(int i, int j) {
-    Table table = *this->initTable;
-    int localId = 1;
-    int tempValue = 0;
-    int step = 0;
-    Tile* tile;
-    while (states.size() < 625){
-        switch (step++ % 5){
-            case 0:
-                tile = factory.createFirstTile(i, j, Direction::Horizontal);
-                if (table.situateTile(tile, localId)){
-                    tempValue += tile->getValue(); //TODO solve the tempValue
-                    increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
-                    while (!table.isAvailable(i, j)){
-                        increment(&i, &j, 1);
-                    }
-                    localId++;
-                    states.emplace_back(table,i, j, tempValue, localId);
-                }
-                delete tile;
-                break;
-            case 1:
-                if (table.situateTile(factory.createFirstTile(i, j, Direction::Vertical), localId)){
 
-                }
-                break;
-            case 2:
-                if (table.situateTile(factory.createSecondTile(i, j, Direction::Horizontal), localId)){
+    iterateState(*initTable, factory.createFirstTile(i, j, Direction::Horizontal), i, j, 0, id, 1);
+    iterateState(*initTable, factory.createFirstTile(i, j, Direction::Vertical), i, j, 0, id, 1);
+    iterateState(*initTable, factory.createSecondTile(i, j, Direction::Horizontal), i, j, 0, id, 1);
+    iterateState(*initTable, factory.createSecondTile(i, j, Direction::Vertical), i, j, 0, id, 1);
+    iterateState(*initTable, factory.createSimpleTile(i, j), i, j, 0, id, 1);
 
-                }
-                break;
-            case 3:
-                if (table.situateTile(factory.createSecondTile(i, j, Direction::Vertical), localId)) {
+}
 
-                }
-                break;
-            default:
-                if (table.situateTile(factory.createSimpleTile(i, j),localId)){
-
-                }
-                break;
-        }
+void CalculationCoverageAlgorithm::iterateState(Table table, Tile *tile, int i, int j, int tempValue, int localId,
+                                                int level) {
+    if (level == generatedDepth){
+        states.emplace_back(table, i, j, tempValue, localId);
+        delete tile;
+        return;
     }
+
+    if (table.situateTile(tile, localId)){
+        tempValue += tile->getValue();
+        increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
+        while (!table.isAvailable(i, j)){
+            increment(&i, &j, 1);
+        }
+        localId++;
+        delete tile;
+    } else {
+        delete tile;
+        return;
+    }
+
+    iterateState(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId, level + 1);
+    iterateState(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId, level + 1);
+    iterateState(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId, level + 1);
+    iterateState(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId, level + 1);
+    iterateState(table, factory.createSimpleTile(i, j), i, j, tempValue, localId, level + 1);
+
 }
 
 bool CalculationCoverageAlgorithm::increment(int *i, int *j, int count) {
@@ -197,3 +160,4 @@ int CalculationCoverageAlgorithm::eval_poi(int number) {
     }
     return max;
 }
+

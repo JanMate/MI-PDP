@@ -26,6 +26,8 @@ private:
     int upperBound = 0;
     vector<State> states;
 
+    const int generatedDepth = 6;
+
     void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
 
     bool increment(int *i, int *j, int count);
@@ -46,6 +48,8 @@ public:
 
     void generateStates(int i, int j);
 
+    void iterateState(Table table, Tile *tile, int i, int j, int tempValue, int localId,
+                      int level);
 };
 
 

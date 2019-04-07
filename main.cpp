@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Logic/CalculationCoverageAlgorithm.h"
 #include "Input/InputLoader.h"
-#include <omp.h>
 
 using namespace std;
 
