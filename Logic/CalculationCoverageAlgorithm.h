@@ -12,6 +12,7 @@
 #include <omp.h>
 #include "../Factory/Factory.h"
 #include "../Object/Table.h"
+#include "../HelpfulObject/State.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ private:
     Factory factory;
     int id = 1;
     int upperBound = 0;
+    vector<State> states;
 
     void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
 
@@ -41,6 +43,9 @@ public:
     Table getBestTable() { return bestTable; }
 
     void fillDisabledTiles(const list<DisabledTile *> &disabledTiles);
+
+    void generateStates(int i, int j);
+
 };
 
 

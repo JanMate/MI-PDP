@@ -32,6 +32,8 @@ void CalculationCoverageAlgorithm::process() {
     if (end)
         return;
 
+    generateStates(0, 0);
+
     #pragma omp parallel for schedule(dynamic)
     for (int k = 0; k < 5; ++k) {
         switch (k){
@@ -115,6 +117,51 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
                 iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
                 break;
             default:
+                break;
+        }
+    }
+}
+
+void CalculationCoverageAlgorithm::generateStates(int i, int j) {
+    Table table = *this->initTable;
+    int localId = 1;
+    int tempValue = 0;
+    int step = 0;
+    Tile* tile;
+    while (states.size() < 625){
+        switch (step++ % 5){
+            case 0:
+                tile = factory.createFirstTile(i, j, Direction::Horizontal);
+                if (table.situateTile(tile, localId)){
+                    tempValue += tile->getValue(); //TODO solve the tempValue
+                    increment(&i, &j, (tile->getDirection() == Direction::Vertical ? 1 : tile->getLength()));
+                    while (!table.isAvailable(i, j)){
+                        increment(&i, &j, 1);
+                    }
+                    localId++;
+                    states.emplace_back(table,i, j, tempValue, localId);
+                }
+                delete tile;
+                break;
+            case 1:
+                if (table.situateTile(factory.createFirstTile(i, j, Direction::Vertical), localId)){
+
+                }
+                break;
+            case 2:
+                if (table.situateTile(factory.createSecondTile(i, j, Direction::Horizontal), localId)){
+
+                }
+                break;
+            case 3:
+                if (table.situateTile(factory.createSecondTile(i, j, Direction::Vertical), localId)) {
+
+                }
+                break;
+            default:
+                if (table.situateTile(factory.createSimpleTile(i, j),localId)){
+
+                }
                 break;
         }
     }
