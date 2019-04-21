@@ -10,6 +10,7 @@
 #include <iostream>
 #include <climits>
 #include <omp.h>
+#include "mpi.h"
 #include "../Factory/Factory.h"
 #include "../Object/Table.h"
 #include "../HelpfulObject/State.h"
@@ -25,8 +26,10 @@ private:
     int id = 1;
     int upperBound = 0;
     vector<State> states;
+    int rank;
+    int processes;
 
-    const int generatedDepth = 6;
+    const int generatedDepth = 5;
 
     void iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId);
 
@@ -38,7 +41,7 @@ public:
 
     ~CalculationCoverageAlgorithm();
 
-    void process();
+    void process(int &argc, char **argv);
 
     int getBestValue() { return bestValue; }
 

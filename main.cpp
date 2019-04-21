@@ -20,10 +20,7 @@ int main(int argc, char *argv[]) {
     auto algorithm = CalculationCoverageAlgorithm(*factory);
     algorithm.fillDisabledTiles(loader.getDisabledTiles());
 
-    algorithm.process();
-
-    algorithm.getBestTable().print();
-    cout << "Best value: " << algorithm.getBestValue() << endl;
+    algorithm.process(argc, argv);
 
     delete factory;
 

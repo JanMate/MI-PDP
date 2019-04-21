@@ -20,7 +20,7 @@ void CalculationCoverageAlgorithm::fillDisabledTiles(const list<DisabledTile *> 
     upperBound = eval_poi(initTable->getCountOfEmptyCells());
 }
 
-void CalculationCoverageAlgorithm::process() {
+void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
     int i = 0, j = 0;
     bool end = false;
     while (!initTable->isAvailable(i, j)){
@@ -34,14 +34,84 @@ void CalculationCoverageAlgorithm::process() {
 
     generateStates(i, j);
 
-    #pragma omp parallel for schedule(dynamic)
-    for (int k = 0; k < states.size() - 1; ++k) {
-        iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
-        iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
-        iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
-        iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
-        iterate(states[k].getTable(), factory.createSimpleTile(states[k].getI(), states[k].getJ()), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+    int provided, required = MPI_THREAD_FUNNELED;
+    MPI_Init_thread(&argc, &argv, required, &provided);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &processes);
+
+    int position;
+    int tag = 1;
+    const int LENGTH = 100;
+    const int TO_END = -1;
+    bool END = false;
+    char buffer[LENGTH];
+    MPI_Status status;
+    int message;
+
+    int k = 0, l;
+    if (rank == 0){ // master process
+        for (k = 0, l = 1; k < states.size() - 1 && l < processes; ++k, ++l){
+            // i,j,k
+            buffer[0] = i;
+            buffer[1] = j;
+            buffer[2] = k;
+            MPI_Send (buffer, LENGTH, MPI_INT, l, tag, MPI_COMM_WORLD);
+        }
+        int workingProcesses = processes - 1;
+        while(workingProcesses){
+            MPI_Recv(buffer, LENGTH, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
+            i = buffer[0];
+            j = buffer[1];
+            k = buffer[2];
+            bestValue = buffer[3];
+            //TODO: add configuration variables
+
+            int destination = status.MPI_SOURCE;
+            if(buffer[0] == TO_END){ //TODO: change TO_END
+                i = -1;
+                MPI_Send(&i, LENGTH, MPI_INT, destination, tag, MPI_COMM_WORLD);
+                workingProcesses--;
+            } else {
+                //poslat dosud nejlepsi dosazene reseni
+                buffer[0] = i;
+                buffer[1] = j;
+                buffer[2] = k;
+                MPI_Send(buffer, LENGTH, MPI_INT, k, tag, MPI_COMM_WORLD);
+            }
+        }
+
+        bestTable.print();
+        cout << "Best value: " << bestValue << endl;
+
+    } else { // slave process
+        while (!END){
+            MPI_Recv(buffer, LENGTH, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+            i = buffer[0];
+            j = buffer[1];
+            k = buffer[2];
+            if (i == TO_END){
+                buffer[0] = -1;
+                MPI_Send (buffer, 1, MPI_INT, 0, tag, MPI_COMM_WORLD);
+                END = true;
+            } else {
+                #pragma omp parallel
+                #pragma omp task
+                iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+                #pragma omp task
+                iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+                #pragma omp task
+                iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+                #pragma omp task
+                iterate(states[k].getTable(), factory.createSecondTile(states[k].getI(), states[k].getJ(), Direction::Vertical), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+                #pragma omp task
+                iterate(states[k].getTable(), factory.createSimpleTile(states[k].getI(), states[k].getJ()), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
+                buffer[3] = bestValue;
+                MPI_Send (buffer, LENGTH, MPI_INT, 0, tag, MPI_COMM_WORLD);
+            }
+        }
     }
+
+    MPI_Finalize();
 }
 
 void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j, int tempValue, int localId) {
@@ -84,10 +154,15 @@ void CalculationCoverageAlgorithm::iterate(Table table, Tile *tile, int i, int j
         return;
     }
 
+    #pragma omp task
     iterate(table, factory.createFirstTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    #pragma omp task
     iterate(table, factory.createFirstTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    #pragma omp task
     iterate(table, factory.createSecondTile(i, j, Direction::Horizontal), i, j, tempValue, localId);
+    #pragma omp task
     iterate(table, factory.createSecondTile(i, j, Direction::Vertical), i, j, tempValue, localId);
+    #pragma omp task
     iterate(table, factory.createSimpleTile(i, j), i, j, tempValue, localId);
 }
 
