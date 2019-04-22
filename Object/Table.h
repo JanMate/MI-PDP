@@ -39,6 +39,10 @@ public:
     int getCountOfEmptyCells();
 
     void decrementFreeCell();
+
+    void toArray(int *buffer);
+
+    void fromArray(int* buffer);
 };
 
 

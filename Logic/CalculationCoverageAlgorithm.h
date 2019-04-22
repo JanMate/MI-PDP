@@ -26,8 +26,15 @@ private:
     int id = 1;
     int upperBound = 0;
     vector<State> states;
+
+    // MPI stuff
     int rank;
     int processes;
+    int tag = 1;
+    const int LENGTH = 200;
+    const int TO_END = -1;
+    bool END = false;
+    MPI_Status status;
 
     const int generatedDepth = 5;
 
@@ -53,6 +60,10 @@ public:
 
     void iterateState(Table table, Tile *tile, int i, int j, int tempValue, int localId,
                       int level);
+
+    void loadBestTable(int* buffer);
+
+    void fillBestTable(int* buffer);
 };
 
 

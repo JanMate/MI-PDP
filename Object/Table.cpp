@@ -87,3 +87,30 @@ void Table::decrementFreeCell() {
     emptyCells--;
 }
 
+void Table::fromArray(int *buffer) {
+    cells.clear();
+    int i;
+    for (i = 0; i < height * width; ++i){
+        cells.push_back(buffer[i + 4]);
+    }
+    int emptySize = buffer[i++ + 4];
+    simpleTiles.clear();
+    for (i; i < (height * width) + (2 * emptySize); i += 2){
+        simpleTiles.emplace_back(buffer[i + 4], buffer[(i + 1) + 4]);
+    }
+}
+
+void Table::toArray(int *buffer) {
+    int i = 0;
+    for (int element : cells){
+        buffer[i + 4] = element;
+        ++i;
+    }
+    buffer[i++ + 4] = simpleTiles.size();
+    for (Position position : simpleTiles){
+        buffer[i + 4] = position.x;
+        buffer[(i + 1) + 4] = position.y;
+        i += 2;
+    }
+}
+

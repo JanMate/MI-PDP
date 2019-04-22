@@ -34,20 +34,11 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
 
     generateStates(i, j);
 
-    int provided, required = MPI_THREAD_FUNNELED;
-    MPI_Init_thread(&argc, &argv, required, &provided);
+    MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &processes);
 
-    int position;
-    int tag = 1;
-    const int LENGTH = 100;
-    const int TO_END = -1;
-    bool END = false;
-    char buffer[LENGTH];
-    MPI_Status status;
-    int message;
-
+    int buffer[LENGTH];
     int k = 0, l;
     if (rank == 0){ // master process
         for (k = 0, l = 1; k < states.size() - 1 && l < processes; ++k, ++l){
@@ -62,21 +53,26 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
             MPI_Recv(buffer, LENGTH, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
             i = buffer[0];
             j = buffer[1];
-            k = buffer[2];
+            //k = buffer[2];
             bestValue = buffer[3];
-            //TODO: add configuration variables
+            loadBestTable(buffer);
 
             int destination = status.MPI_SOURCE;
-            if(buffer[0] == TO_END){ //TODO: change TO_END
+            if(buffer[0] == TO_END){
                 i = -1;
                 MPI_Send(&i, LENGTH, MPI_INT, destination, tag, MPI_COMM_WORLD);
                 workingProcesses--;
             } else {
                 //poslat dosud nejlepsi dosazene reseni
-                buffer[0] = i;
-                buffer[1] = j;
-                buffer[2] = k;
-                MPI_Send(buffer, LENGTH, MPI_INT, k, tag, MPI_COMM_WORLD);
+                if (k++ < states.size() - 1) {
+                    buffer[0] = i;
+                    buffer[1] = j;
+                    buffer[2] = k;
+                    MPI_Send(buffer, LENGTH, MPI_INT, destination, tag, MPI_COMM_WORLD);
+                } else {
+                    buffer[0] = -1;
+                    MPI_Send(buffer, LENGTH, MPI_INT, destination, tag, MPI_COMM_WORLD);
+                }
             }
         }
 
@@ -106,6 +102,7 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
                 #pragma omp task
                 iterate(states[k].getTable(), factory.createSimpleTile(states[k].getI(), states[k].getJ()), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
                 buffer[3] = bestValue;
+                fillBestTable(buffer);
                 MPI_Send (buffer, LENGTH, MPI_INT, 0, tag, MPI_COMM_WORLD);
             }
         }
@@ -234,5 +231,13 @@ int CalculationCoverageAlgorithm::eval_poi(int number) {
         if (x>max) max=x;
     }
     return max;
+}
+
+void CalculationCoverageAlgorithm::loadBestTable(int *buffer) {
+    bestTable.fromArray(buffer);
+}
+
+void CalculationCoverageAlgorithm::fillBestTable(int *buffer) {
+    bestTable.toArray(buffer);
 }
 
