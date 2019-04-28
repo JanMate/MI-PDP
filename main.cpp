@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Logic/CalculationCoverageAlgorithm.h"
 #include "Input/InputLoader.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -17,13 +18,19 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    double startTime = omp_get_wtime();
+
     auto algorithm = CalculationCoverageAlgorithm(*factory);
     algorithm.fillDisabledTiles(loader.getDisabledTiles());
 
     algorithm.process();
 
+    double endTime = omp_get_wtime();
+
     algorithm.getBestTable().print();
-    cout << "Best value: " << algorithm.getBestValue() << endl;
+    cout << "Best value: " << algorithm.getBestValue() << endl << endl;
+
+    cout << "Elapsed time: " << (endTime - startTime) << endl;
 
     delete factory;
 

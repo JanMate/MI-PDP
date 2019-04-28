@@ -8,6 +8,7 @@
 
 #include <list>
 #include <iostream>
+#include <limits.h>
 #include "../Factory/Factory.h"
 #include "../Object/Table.h"
 
