@@ -21,6 +21,13 @@ void CalculationCoverageAlgorithm::fillDisabledTiles(const list<DisabledTile *> 
 }
 
 void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &processes);
+
+    double startTime = MPI_Wtime();
+
+    // An algorithm starts here
     int i = 0, j = 0;
     bool end = false;
     while (!initTable->isAvailable(i, j)){
@@ -33,10 +40,6 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
         return;
 
     generateStates(i, j);
-
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &processes);
 
     int buffer[LENGTH];
     int k = 0, l;
@@ -77,7 +80,7 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
         }
 
         bestTable.print();
-        cout << "Best value: " << bestValue << endl;
+        cout << "Best value: " << bestValue << endl << endl;
 
     } else { // slave process
         while (!END){
@@ -90,6 +93,9 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
                 MPI_Send (buffer, 1, MPI_INT, 0, tag, MPI_COMM_WORLD);
                 END = true;
             } else {
+                if (argv[2] != nullptr) {
+                    omp_set_num_threads(atoi(argv[2]));
+                }
                 #pragma omp parallel
                 #pragma omp task
                 iterate(states[k].getTable(), factory.createFirstTile(states[k].getI(), states[k].getJ(), Direction::Horizontal), states[k].getI(), states[k].getJ(), states[k].getTempValue(), states[k].getLocalId());
@@ -106,6 +112,12 @@ void CalculationCoverageAlgorithm::process(int &argc, char **argv) {
                 MPI_Send (buffer, LENGTH, MPI_INT, 0, tag, MPI_COMM_WORLD);
             }
         }
+    }
+
+    double endTime = MPI_Wtime();
+
+    if(!rank) {
+        cout << "Elapsed time : " << (endTime - startTime) << endl;
     }
 
     MPI_Finalize();
